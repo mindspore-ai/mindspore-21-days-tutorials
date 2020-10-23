@@ -65,5 +65,7 @@ python export_mindir.py --ckpt_path=ckpt_0/mobilenetv2-10_1562.ckpt
 converter_lite --fmk=MINDIR --modelFile=./mobilenetv2.mindir --outputFile=mobilenetv2
 ```
 
-# 操作视频参考链接
-https://mslite-app.obs.cn-north-4.myhuaweicloud.com/%E6%93%8D%E4%BD%9C%E8%A7%86%E9%A2%91-%E7%BB%88%E7%89%882.mp4
+# 操作步骤视频
+[视频访问地址](https://mslite-app.obs.cn-north-4.myhuaweicloud.com:443/%E6%93%8D%E4%BD%9C%E8%A7%86%E9%A2%91-%E7%BB%88%E7%89%882.mp4?AccessKeyId=PQ7DQUATQUMX3VMMPIPM&Expires=1603523256&Signature=wHXWu5LQd%2BFcKXfygZDbROvuLzY%3D)
+
+
