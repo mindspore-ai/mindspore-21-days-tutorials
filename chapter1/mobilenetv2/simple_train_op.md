@@ -19,9 +19,11 @@ tar -zxvf cifar-10-binary.tar.gz
 # 创建用于存放训练集的目录，将训练集5个.bin文件拷贝到该目录下
 mkdir -p /root/workspace/mobile/data/train
 cp /root/cifar-10-batches-bin/data_*.bin /root/workspace/mobile/data/train
+
 # 创建用于存放测试集的目录，将测试集1个.bin文件拷贝到该目录下
 mkdir -p /root/workspace/mobile/data/eval
 cp /root/cifar-10-batches-bin/test_batch.bin /root/workspace/mobile/data/eval
+```
 
 ### 训练启动阶段
 ##### 启动GPU容器
