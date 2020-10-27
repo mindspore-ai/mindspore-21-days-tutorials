@@ -11,4 +11,3 @@
 # 安卓手机USB调试模式设置参考视频
 [视频地址](https://mslite-app.obs.cn-north-4.myhuaweicloud.com:443/phone_usb.mp4?AccessKeyId=PQ7DQUATQUMX3VMMPIPM&Expires=1606355419&Signature=FkBj9/M4rxz7qQpZxt2CbOxj4Ik%3D)
 
-

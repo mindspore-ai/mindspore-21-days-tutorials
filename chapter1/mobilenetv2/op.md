@@ -68,4 +68,3 @@ converter_lite --fmk=MINDIR --modelFile=./mobilenetv2.mindir --outputFile=mobile
 # 操作步骤视频
 [视频访问地址](https://mslite-app.obs.cn-north-4.myhuaweicloud.com:443/%E6%93%8D%E4%BD%9C%E8%A7%86%E9%A2%91-%E7%BB%88%E7%89%882.mp4?AccessKeyId=PQ7DQUATQUMX3VMMPIPM&Expires=1606355515&Signature=A5ZpMN1CqGm8btd57Egvf9LjSuQ%3D)
 
-
