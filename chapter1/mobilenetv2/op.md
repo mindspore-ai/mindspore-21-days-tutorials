@@ -1,17 +1,37 @@
+注：需事先安装好docker gpu环境，可参考[docker_install.md](https://github.com/mindspore-ai/mindspore-21-days-tutorials/blob/main/chapter1/mobilenetv2/docker_install.md)文件
+
 # 训练准备阶段
 ### 下载mindspore 1.0.0版本代码
+```
+# 在root用户主目录执行如下命令
 git clone https://gitee.com/mindspore/mindspore.git -b r1.0
+```
 
 ### 训练及模型导出脚本准备
+##### 拷贝官方model_zoo提供的mobilenetv2训练脚本，做自定义修改
 ```
-拷贝官方model_zoo提供的mobilenetv2训练脚本，做自定义修改
+mkdir -p /root/workspace/mobile
 cp -r /root/mindspore/model_zoo/official/cv/mobilenetv2 /root/workspace/mobile/mobilenetv2
-
-准备cifar-10数据集（二进制格式），存放于/root/workspace/mobile/data目录下，然后对脚本做一定调整
-。。。
-
-创建模型导出脚本,存放于/root/workspace/mobile/mobilenetv2目录下，命名为export_mindir.py
 ```
+若想快速体验运行脚本，并不想做自定义修改，可不执行上述cp命令,直接使用如下命令下载第一讲课程提供的[mobilenetv2脚本](https://github.com/mindspore-ai/mindspore-21-days-tutorials/tree/main/chapter1/mobilenetv2)，将mobilenetv2目录拷贝至/root/workspace/mobile目录下即可。
+
+```
+git clone https://github.com/mindspore-ai/mindspore-21-days-tutorials.git
+cp -r /root/mindspore-21-days-tutorials/chapter1/mobilenetv2 /root/workspace/mobile
+```
+
+##### 准备cifar-10数据集（binary二进制格式）
+使用tar命令将下载好的数据集解压，生成5个训练集.bin文件和1个测试集.bin文件。
+```
+# 创建用于存放训练集的目录，将训练集5个.bin文件拷贝到该目录下
+mkdir -p /root/workspace/mobile/data/train
+# 创建用于存放测试集的目录，将测试集1个.bin文件拷贝到该目录下
+mkdir -p /root/workspace/mobile/data/eval
+```
+
+##### 创建模型导出脚本
+可直接使用第一讲课程提供的[mobilenetv2脚本](https://github.com/mindspore-ai/mindspore-21-days-tutorials/tree/main/chapter1/mobilenetv2)，其命名为export_mindir.py
+
 
 ### 端侧converter_lite模型转换工具准备
 ##### 编译端侧converter_lite模型转换工具
