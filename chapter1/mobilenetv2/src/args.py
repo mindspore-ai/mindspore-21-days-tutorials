@@ -32,3 +32,4 @@ def parse_args():
     parser.add_argument('--run_distribute', type=ast.literal_eval, default=False, help='Run distribute')
     args = parser.parse_args()
     return args
+

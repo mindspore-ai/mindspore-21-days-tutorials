@@ -96,3 +96,4 @@ def set_config(args):
         raise ValueError("Unsupport platform.")
 
     return config[args.platform]
+

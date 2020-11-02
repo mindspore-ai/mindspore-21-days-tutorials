@@ -42,3 +42,4 @@ if __name__ == '__main__':
     input = np.random.uniform(0.0, 1.0, size=[32, 3, 224, 224]).astype(np.float32)
     export(mobilenet, Tensor(input), file_name=args.mindir_name, file_format='MINDIR')
 
+
