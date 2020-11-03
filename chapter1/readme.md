@@ -11,6 +11,34 @@
 # 安卓手机USB调试模式设置参考视频
 [视频地址](https://mslite-app.obs.cn-north-4.myhuaweicloud.com:443/phone_usb.mp4?AccessKeyId=PQ7DQUATQUMX3VMMPIPM&Expires=1606355419&Signature=FkBj9/M4rxz7qQpZxt2CbOxj4Ik%3D)
 
+# 端侧作业说明文档
+为加快github下载速度，将作业说明文档移出21天教程仓，存放于华为云OBS平台，有需要的同事自行获取
+
+Windows/Mac用户：
+
+可直接点击[下载链接](https://mslite-app.obs.cn-north-4.myhuaweicloud.com/MindSpore_Lite_homework_v2.docx)获取作业说明文档
+
+Linux用户：
+
+可使用wget命令获取作业说明文档
+```
+wget https://mslite-app.obs.cn-north-4.myhuaweicloud.com/MindSpore_Lite_homework_v2.docx
+```
+
+# 端侧应用安装指导文档
+为加快github下载速度，将安装指导文档移出21天教程仓，存放于华为云OBS平台，有需要的同事自行获取
+
+Windows/Mac用户：
+
+可直接点击[下载链接](https://mslite-app.obs.cn-north-4.myhuaweicloud.com/MSLite_App_Install_guidance.docx)获取作业说明文档
+
+Linux用户：
+
+可使用wget命令获取作业说明文档
+```
+wget https://mslite-app.obs.cn-north-4.myhuaweicloud.com/MSLite_App_Install_guidance.docx
+```
+
 # 使用容器执行训练等操作
 注：仅提供相关脚本供开发者快速使用，对模型未进行过深度调优。
 
