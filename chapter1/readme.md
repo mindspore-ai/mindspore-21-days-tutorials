@@ -45,4 +45,3 @@ wget https://mslite-app.obs.cn-north-4.myhuaweicloud.com/MSLite_App_Install_guid
 如果需要体验模型训练和转换整个过程，可访chapter1目录下[full_op.md](https://github.com/mindspore-ai/mindspore-21-days-tutorials/blob/main/chapter1/mobilenetv2/full_op.md)文件
 
 如果只是想体验模型训练的过程，可访问chapter1目录下[simple_train_op.md](https://github.com/mindspore-ai/mindspore-21-days-tutorials/blob/main/chapter1/mobilenetv2/simple_train_op.md)
-
