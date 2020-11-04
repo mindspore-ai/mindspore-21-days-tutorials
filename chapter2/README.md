@@ -1,4 +1,4 @@
-#### 因容量原因，将指导文档移出repo，可全准备文档、体验作业文档和进阶作业文档可从以下链接中获取
+#### 因容量原因，将指导文档移出repo，课前准备文档、体验作业文档和进阶作业文档可从以下链接中获取
 
 # 课前准备文档
 [MindSpore Bert课前准备文档](https://e-share.obs-website.cn-north-1.myhuaweicloud.com?token=SvjC1tq+9EC0fILT0WI5w1SIJKMVsoAn6d3hiNI5bHpGQMMKuJiZhGfVhyPTgqUIFIVIYKtAmENUpN6ssH654op9P9KNXqX021meACXkf2EZ+O58B+FMoSmBJoaoi+97k52R89dhiOtO4HUMuIK6JYdZImjBOaZ1gxeB+gXCgHBKRNpzfcccU4d41LlA3BPBHqj522A/6usmFwbVKnSPbzaAGtCEd3ii5fnplIb9ERpkeJslRvc2LvLbc3m/Mssq6WjER3h0y0YZo6ZdXLnWsWx80qMcPA9ZV7b+guGx1bZrGhxpfPOCvewuTBgPl8WLlGhKx2EWL6G/iOe/ANpGPqvQKyQ7YYzNY215QzFbBQOKnckNqjgpA7zEN3/pNF4jSeVkEa64/i/X7JIrt9/i5AJn3/5/pCti37azPA9oWp466Q7TFVCb++NefcFcCsFe10ycrzjnyzS1Ki6UYzU5yxy2dsmYVdliE8vlvsSZH66KwIJ1z6UR/N7+5n4FPOzSuQuS1VWbK4QButAmBPpGz2OjdCHiNqV/9i1XBt8/OsfxLmQGf8zt7OHnY6auLYJEBfe6Hk0xI6n95sRSx/X6JzLt+fsSspm5Aht3cI9W+7tUYlEXywJHLkNs/a+7JPyZqN2ZhZbI08kuilO4ehHtWA==) (提取码: 123456)
