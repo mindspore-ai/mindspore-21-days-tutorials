@@ -132,3 +132,4 @@ dmypy.json
 **/*.meta
 
 .idea
+.DS_Store
