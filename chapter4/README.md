@@ -12,6 +12,10 @@
 
     [YOLOv3进阶作业](https://ascend-tutorials.obs.cn-north-4.myhuaweicloud.com/yolov3_darknet53/demo/YOLOv3%E8%BF%9B%E9%98%B6%E4%BD%9C%E4%B8%9A.pdf)
 
+* YOLOv4-CSPDarkNet53预训练模型
+
+    [YOLOv4预训练模型下载地址](https://ascend-tutorials.obs.cn-north-4.myhuaweicloud.com/yolov3_darknet53/ckpt_files/yolov4-320_20800.ckpt)
+
 ## 免责声明
 
 MindSpore ModelZoo only provides scripts that downloads and preprocesses public datasets. We do not own these datasets and are not responsible for their quality or maintenance. Please make sure you have permission to use the dataset under the dataset’s license. The models trained on these dataset are for non-commercial research and educational purpose only.
