@@ -6,7 +6,7 @@
 # 在root用户主目录下执行如下命令
 git clone https://github.com/mindspore-ai/mindspore-21-days-tutorials.git
 mkdir -p /root/workspace/wide_deep
-cp -r /root/mindspore-21-days-tutorials/chapter5/wide_deep /root/workspace/wide_deep
+cp -r /root/mindspore-21-days-tutorials/chapter5/wide_deep_gpu /root/workspace/wide_deep
 cd /root/workspace/wide_deep
 ```
 
