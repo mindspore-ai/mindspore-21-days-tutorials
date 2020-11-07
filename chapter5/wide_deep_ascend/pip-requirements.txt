@@ -1,0 +1,2 @@
+pandas-1.1.4-cp36-cp36m-manylinux1_x86_64.whl
+scikit_learn-0.23.2-cp36-cp36m-manylinux1_x86_64.whl
