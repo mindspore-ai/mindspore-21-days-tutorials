@@ -21,30 +21,23 @@ from easydict import EasyDict as edict
 import mindspore.common.dtype as mstype
 from .bert_model import BertConfig
 
-cfg = edict({
-    'task': 'CLS',
-    'num_labels': 15,
-    'data_file': '/cache/data/train.tf_record',
-    'schema_file': None,
-    'epoch_num': 3,
-    'ckpt_prefix': 'tnews',
-    'ckpt_dir': '/cache/train',
-    'pre_training_ckpt': '/home/work/user-job-dir/bert/bert_base.ckpt',
-    'use_crf': False,
+optimizer_cfg = edict({
+    'batch_size': 16,
     'optimizer': 'Lamb',
-    'AdamWeightDecayDynamicLR': edict({
+    'AdamWeightDecay': edict({
         'learning_rate': 2e-5,
         'end_learning_rate': 1e-7,
         'power': 1.0,
         'weight_decay': 1e-5,
+        'decay_filter': lambda x: 'layernorm' not in x.name.lower() and 'bias' not in x.name.lower(),
         'eps': 1e-6,
     }),
     'Lamb': edict({
-        'start_learning_rate': 2e-5,
+        'learning_rate': 2e-5,
         'end_learning_rate': 1e-7,
         'power': 1.0,
         'weight_decay': 0.01,
-        'decay_filter': lambda x: False,
+        'decay_filter': lambda x: 'layernorm' not in x.name.lower() and 'bias' not in x.name.lower(),
     }),
     'Momentum': edict({
         'learning_rate': 2e-5,
@@ -52,8 +45,12 @@ cfg = edict({
     }),
 })
 
+cloud_cfg = edict({
+    'vocab_file': '/home/work/user-job-dir/bert/vocab.txt',
+    'finetune_ckpt': '/home/work/user-job-dir/bert/tnews-3_3335.ckpt'
+})
+
 bert_net_cfg = BertConfig(
-    batch_size=16,
     seq_length=128,
     vocab_size=21128,
     hidden_size=768,
@@ -67,54 +64,6 @@ bert_net_cfg = BertConfig(
     type_vocab_size=2,
     initializer_range=0.02,
     use_relative_positions=False,
-    input_mask_from_dataset=True,
-    token_type_ids_from_dataset=True,
     dtype=mstype.float32,
     compute_type=mstype.float16,
 )
-
-tag_to_index = {
-    "O": 0,
-    "S_address": 1,
-    "B_address": 2,
-    "M_address": 3,
-    "E_address": 4,
-    "S_book": 5,
-    "B_book": 6,
-    "M_book": 7,
-    "E_book": 8,
-    "S_company": 9,
-    "B_company": 10,
-    "M_company": 11,
-    "E_company": 12,
-    "S_game": 13,
-    "B_game": 14,
-    "M_game": 15,
-    "E_game": 16,
-    "S_government": 17,
-    "B_government": 18,
-    "M_government": 19,
-    "E_government": 20,
-    "S_movie": 21,
-    "B_movie": 22,
-    "M_movie": 23,
-    "E_movie": 24,
-    "S_name": 25,
-    "B_name": 26,
-    "M_name": 27,
-    "E_name": 28,
-    "S_organization": 29,
-    "B_organization": 30,
-    "M_organization": 31,
-    "E_organization": 32,
-    "S_position": 33,
-    "B_position": 34,
-    "M_position": 35,
-    "E_position": 36,
-    "S_scene": 37,
-    "B_scene": 38,
-    "M_scene": 39,
-    "E_scene": 40,
-    "<START>": 41,
-    "<STOP>": 42
-}

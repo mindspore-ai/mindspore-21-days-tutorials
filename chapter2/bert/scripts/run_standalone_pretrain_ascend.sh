@@ -16,8 +16,8 @@
 
 echo "=============================================================================================================="
 echo "Please run the scipt as: "
-echo "bash run_standalone_pretrain.sh DEVICE_ID EPOCH_SIZE DATA_DIR SCHEMA_DIR"
-echo "for example: bash run_standalone_pretrain.sh 0 40 /path/zh-wiki/ /path/Schema.json"
+echo "bash run_standalone_pretrain_ascend.sh DEVICE_ID EPOCH_SIZE DATA_DIR SCHEMA_DIR"
+echo "for example: bash run_standalone_pretrain_ascend.sh 0 40 /path/zh-wiki/ /path/Schema.json"
 echo "=============================================================================================================="
 
 DEVICE_ID=$1
@@ -26,10 +26,11 @@ DATA_DIR=$3
 SCHEMA_DIR=$4
 
 mkdir -p ms_log 
+PROJECT_DIR=$(cd "$(dirname "$0")" || exit; pwd)
 CUR_DIR=`pwd`
 export GLOG_log_dir=${CUR_DIR}/ms_log
 export GLOG_logtostderr=0
-python run_pretrain.py  \
+python ${PROJECT_DIR}/../run_pretrain.py  \
     --distribute="false" \
     --epoch_size=$EPOCH_SIZE \
     --device_id=$DEVICE_ID \
@@ -38,8 +39,9 @@ python run_pretrain.py  \
     --do_shuffle="true" \
     --enable_data_sink="true" \
     --data_sink_steps=1 \
+    --accumulation_steps=1 \
     --load_checkpoint_path="" \
     --save_checkpoint_steps=10000 \
     --save_checkpoint_num=1 \
     --data_dir=$DATA_DIR \
-    --schema_dir=$SCHEMA_DIR > log.txt 2>&1 &
+    --schema_dir=$SCHEMA_DIR > pretraining_log.txt 2>&1 &

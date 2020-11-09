@@ -19,25 +19,29 @@ from easydict import EasyDict as edict
 import mindspore.common.dtype as mstype
 from .bert_model import BertConfig
 cfg = edict({
+    'batch_size': 32,
     'bert_network': 'base',
     'loss_scale_value': 65536,
     'scale_factor': 2,
     'scale_window': 1000,
     'optimizer': 'Lamb',
-    'AdamWeightDecayDynamicLR': edict({
+    'enable_global_norm': False,
+    'AdamWeightDecay': edict({
         'learning_rate': 3e-5,
-        'end_learning_rate': 1e-10,
+        'end_learning_rate': 0.0,
         'power': 5.0,
         'weight_decay': 1e-5,
+        'decay_filter': lambda x: 'layernorm' not in x.name.lower() and 'bias' not in x.name.lower(),
         'eps': 1e-6,
         'warmup_steps': 10000,
     }),
     'Lamb': edict({
-        'start_learning_rate': 3e-5,
-        'end_learning_rate': 1e-10,
+        'learning_rate': 3e-5,
+        'end_learning_rate': 0.0,
         'power': 10.0,
         'warmup_steps': 10000,
         'weight_decay': 0.01,
+        'decay_filter': lambda x: 'layernorm' not in x.name.lower() and 'bias' not in x.name.lower(),
         'eps': 1e-6,
     }),
     'Momentum': edict({
@@ -48,13 +52,13 @@ cfg = edict({
 
 '''
 Including two kinds of network: \
-base: Goole BERT-base(the base version of BERT model).
+base: Google BERT-base(the base version of BERT model).
 large: BERT-NEZHA(a Chinese pretrained language model developed by Huawei, which introduced a improvement of \
        Functional Relative Posetional Encoding as an effective positional encoding scheme).
 '''
 if cfg.bert_network == 'base':
+    cfg.batch_size = 64
     bert_net_cfg = BertConfig(
-        batch_size=32,
         seq_length=128,
         vocab_size=21128,
         hidden_size=768,
@@ -68,14 +72,12 @@ if cfg.bert_network == 'base':
         type_vocab_size=2,
         initializer_range=0.02,
         use_relative_positions=False,
-        input_mask_from_dataset=True,
-        token_type_ids_from_dataset=True,
         dtype=mstype.float32,
         compute_type=mstype.float16
     )
 if cfg.bert_network == 'nezha':
+    cfg.batch_size = 96
     bert_net_cfg = BertConfig(
-        batch_size=32,
         seq_length=128,
         vocab_size=21128,
         hidden_size=1024,
@@ -89,14 +91,12 @@ if cfg.bert_network == 'nezha':
         type_vocab_size=2,
         initializer_range=0.02,
         use_relative_positions=True,
-        input_mask_from_dataset=True,
-        token_type_ids_from_dataset=True,
         dtype=mstype.float32,
         compute_type=mstype.float16
     )
 if cfg.bert_network == 'large':
+    cfg.batch_size = 24
     bert_net_cfg = BertConfig(
-        batch_size=16,
         seq_length=512,
         vocab_size=30522,
         hidden_size=1024,
@@ -110,9 +110,6 @@ if cfg.bert_network == 'large':
         type_vocab_size=2,
         initializer_range=0.02,
         use_relative_positions=False,
-        input_mask_from_dataset=True,
-        token_type_ids_from_dataset=True,
         dtype=mstype.float32,
-        compute_type=mstype.float16,
-        enable_fused_layernorm=True
+        compute_type=mstype.float16
     )

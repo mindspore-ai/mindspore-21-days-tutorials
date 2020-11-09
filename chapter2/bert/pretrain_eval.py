@@ -19,7 +19,7 @@ Bert evaluation script.
 
 import os
 from src import BertModel, GetMaskedLMOutput
-from src.evaluation_config import cfg, bert_net_cfg
+from src.config import cfg, bert_net_cfg
 import mindspore.common.dtype as mstype
 from mindspore import context
 from mindspore.common.tensor import Tensor
@@ -88,6 +88,7 @@ class BertPretrainEva(nn.Cell):
 
 
     def construct(self, input_ids, input_mask, token_type_id, masked_pos, masked_ids, masked_weights, nsp_label):
+        """Calculate prediction scores"""
         bs, _ = self.shape(input_ids)
         probs = self.bert(input_ids, input_mask, token_type_id, masked_pos)
         index = self.argmax(probs)
@@ -104,19 +105,19 @@ class BertPretrainEva(nn.Cell):
 
 def get_enwiki_512_dataset(batch_size=1, repeat_count=1, distribute_file=''):
     '''
-    Get enwiki seq_length=512 dataset
+    Get enwiki dataset when seq_length is 512.
     '''
     ds = de.TFRecordDataset([cfg.data_file], cfg.schema_file, columns_list=["input_ids", "input_mask", "segment_ids",
                                                                             "masked_lm_positions", "masked_lm_ids",
                                                                             "masked_lm_weights",
                                                                             "next_sentence_labels"])
     type_cast_op = C.TypeCast(mstype.int32)
-    ds = ds.map(input_columns="segment_ids", operations=type_cast_op)
-    ds = ds.map(input_columns="input_mask", operations=type_cast_op)
-    ds = ds.map(input_columns="input_ids", operations=type_cast_op)
-    ds = ds.map(input_columns="masked_lm_ids", operations=type_cast_op)
-    ds = ds.map(input_columns="masked_lm_positions", operations=type_cast_op)
-    ds = ds.map(input_columns="next_sentence_labels", operations=type_cast_op)
+    ds = ds.map(operations=type_cast_op, input_columns="segment_ids")
+    ds = ds.map(operations=type_cast_op, input_columns="input_mask")
+    ds = ds.map(operations=type_cast_op, input_columns="input_ids")
+    ds = ds.map(operations=type_cast_op, input_columns="masked_lm_ids")
+    ds = ds.map(operations=type_cast_op, input_columns="masked_lm_positions")
+    ds = ds.map(operations=type_cast_op, input_columns="next_sentence_labels")
     ds = ds.repeat(repeat_count)
 
     # apply batch operations
@@ -130,7 +131,7 @@ def bert_predict():
     '''
     devid = int(os.getenv('DEVICE_ID'))
     context.set_context(mode=context.GRAPH_MODE, device_target="Ascend", device_id=devid)
-    dataset = get_enwiki_512_dataset(bert_net_cfg.batch_size, 1)
+    dataset = get_enwiki_512_dataset(cfg.batch_size, 1)
     net_for_pretraining = BertPretrainEva(bert_net_cfg)
     net_for_pretraining.set_train(False)
     param_dict = load_checkpoint(cfg.finetune_ckpt)
