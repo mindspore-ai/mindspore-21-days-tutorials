@@ -26,9 +26,9 @@ from mindspore.train import Model
 from mindspore.train.callback import ModelCheckpoint, CheckpointConfig, TimeMonitor, Callback, LossMonitor
 from mindspore.train.loss_scale_manager import FixedLossScaleManager
 
-from dataset import create_dataset, device_num
-from config import cfg
-from resnet import resnet50
+from src.dataset import create_dataset, device_num
+from src.config import cfg
+from src.resnet import resnet50
 
 random.seed(1)
 np.random.seed(1)

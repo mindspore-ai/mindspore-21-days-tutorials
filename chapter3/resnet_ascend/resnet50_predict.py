@@ -24,8 +24,8 @@ import mindspore
 from mindspore import context, Tensor
 from mindspore.train.serialization import load_checkpoint, load_param_into_net
 
-from config import cfg
-from resnet import resnet50
+from src.config import cfg
+from src.resnet import resnet50
 
 random.seed(1)
 np.random.seed(1)
@@ -106,7 +106,7 @@ def resnet50_predict(args_opt):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='ResNet50 train.')
+    parser = argparse.ArgumentParser(description='ResNet50 predict.')
     parser.add_argument('--data_url', required=True, default=None, help='Location of data.')
     parser.add_argument('--train_url', required=True, default=None, help='Location of training outputs.')
     parser.add_argument('--checkpoint_path', required=True, type=str, default=None, help='Checkpoint file path')

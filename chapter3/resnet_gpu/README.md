@@ -40,16 +40,16 @@ cd ../resnet_gpu/
 python train.py --dataset_path ../mushroom-dataset/train
 ```
 ```
-epoch: 90 step: 201, loss is 1.5889285
-epoch: 90 step: 202, loss is 1.377257
-epoch: 90 step: 203, loss is 1.6227098
-epoch: 90 step: 204, loss is 1.5957711
-epoch: 90 step: 205, loss is 1.4774182
-epoch: 90 step: 206, loss is 1.3818822
-epoch: 90 step: 207, loss is 1.2700025
-epoch: 90 step: 208, loss is 1.5183961
-epoch: 90 step: 209, loss is 1.5881176
-Epoch time: 11870.333, per step time: 56.796
+epoch: 90 step: 201, loss is 1.2514226
+epoch: 90 step: 202, loss is 1.033073
+epoch: 90 step: 203, loss is 1.3107909
+epoch: 90 step: 204, loss is 1.0333312
+epoch: 90 step: 205, loss is 1.255686
+epoch: 90 step: 206, loss is 1.1876906
+epoch: 90 step: 207, loss is 1.123241
+epoch: 90 step: 208, loss is 1.2708801
+epoch: 90 step: 209, loss is 1.1666311
+Epoch time: 11931.645, per step time: 57.089
 ```
 
 ### 下载ResNet-50预训练模型（推理任务使用）
@@ -63,10 +63,10 @@ cd ./ckpt_files && wget https://ascend-tutorials.obs.cn-north-4.myhuaweicloud.co
 ### 模型精度验证
 
 ```
-python eval.py --checkpoint_path ./ckpt_files/resnet-90_209.ckpt --dataset_path ../mushroom-dataset/train
+python eval.py --checkpoint_path ./ckpt_files/resnet-90_209.ckpt --dataset_path ../mushroom-dataset/eval
 ```
 ```
-result: {'top_1_accuracy': 0.7034988038277512, 'top_5_accuracy': 0.9732356459330144} ckpt= ./ckpt_files/resnet-90_209.ckpt
+result: {'top_5_accuracy': 0.9895833333333334, 'top_1_accuracy': 0.78125} ckpt= resnet-90_209.ckpt
 ```
 
 ### 模型推理
@@ -76,7 +76,7 @@ python predict.py --checkpoint_path ./ckpt_files/resnet-90_209.ckpt --image_path
 ```
 ```
 预测的蘑菇标签为:
-	Lactarius松乳菇,红菇目,红菇科,乳菇属,广泛分布于亚热带松林地,无毒
+	Agaricus双孢蘑菇,伞菌目,蘑菇科,蘑菇属,广泛分布于北半球温带,无毒
 ```
 
 ## 许可证

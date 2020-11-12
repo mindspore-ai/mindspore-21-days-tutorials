@@ -105,8 +105,8 @@ def create_dataset2(dataset_path, do_train, repeat_num=1, batch_size=32, target=
                                    num_shards=device_num, shard_id=rank_id)
 
     image_size = 224
-    mean = [0.485 * 255, 0.456 * 255, 0.406 * 255]
-    std = [0.229 * 255, 0.224 * 255, 0.225 * 255]
+    mean = [0.417 * 255, 0.385 * 255, 0.299 * 255]
+    std = [0.264 * 255, 0.241 * 255, 0.240 * 255]
 
     # define map operations
     if do_train:
