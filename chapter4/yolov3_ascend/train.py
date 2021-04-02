@@ -24,6 +24,7 @@ import mindspore.nn as nn
 import mindspore.context as context
 from mindspore import Tensor
 from mindspore.nn.optim.momentum import Momentum
+
 from mindspore.train.callback import ModelCheckpoint, RunContext
 from mindspore.train.callback import _InternalCallbackParam, CheckpointConfig
 from mindspore.train.serialization import load_checkpoint, load_param_into_net
@@ -31,13 +32,10 @@ from mindspore.train.serialization import load_checkpoint, load_param_into_net
 from src.yolo import YOLOV3DarkNet53, YoloWithLossCell, TrainingWrapper
 from src.logger import get_logger
 from src.util import AverageMeter, load_backbone, get_param_groups
-from src.lr_scheduler import warmup_step_lr, warmup_cosine_annealing_lr, \
-    warmup_cosine_annealing_lr_V2, warmup_cosine_annealing_lr_sample
+from src.lr_scheduler import get_lr
 from src.yolo_dataset import create_yolo_dataset
 from src.initializer import default_recursive_init
 from src.config import ConfigYOLOV3DarkNet53
-from src.transforms import batch_preprocess_true_box, batch_preprocess_true_box_single
-from src.util import ShapeRecord
 
 context.set_context(mode=context.GRAPH_MODE, enable_auto_mixed_precision=True,
                     device_target="Ascend", save_graphs=False)
@@ -61,7 +59,7 @@ def parse_args():
 
     # dataset related
     parser.add_argument('--per_batch_size', default=32, type=int, help='batch size for per gpu')
-    parser.add_argument('--epoch_size', type=int, default=320, help='max epoch num to train the model')
+    parser.add_argument('--max_epoch', type=int, default=320, help='max epoch num to train the model')
     parser.add_argument('--warmup_epochs', default=0, type=float, help='warmup epoch')
 
     # network related
@@ -125,15 +123,15 @@ def train():
 
     loss_meter = AverageMeter('loss')
 
-    network = YOLOV3DarkNet53(is_training=True)
-    # default is kaiming-normal
-    default_recursive_init(network)
-
     pretrained_backbone_slice = args.pretrained_backbone.split('/')
     backbone_ckpt_file = pretrained_backbone_slice[len(pretrained_backbone_slice)-1]
     local_backbone_ckpt_path = '/cache/'+backbone_ckpt_file
     # download backbone checkpoint
     mox.file.copy_parallel(src_url=args.pretrained_backbone, dst_url=local_backbone_ckpt_path)
+
+    network = YOLOV3DarkNet53(is_training=True)
+    # default is kaiming-normal
+    default_recursive_init(network)
 
     if args.pretrained_backbone:
         network = load_backbone(network, local_backbone_ckpt_path, args)
@@ -180,7 +178,7 @@ def train():
     ds, data_size = create_yolo_dataset(image_dir=os.path.join(local_data_path, 'images'),
                                         anno_path=os.path.join(local_data_path, 'annotation.json'),
                                         is_training=True,
-                                        batch_size=args.per_batch_size, max_epoch=args.epoch_size,
+                                        batch_size=args.per_batch_size, max_epoch=args.max_epoch,
                                         device_num=args.group_size, rank=args.rank, config=config)
     args.logger.info('Finish loading dataset')
 
@@ -190,37 +188,7 @@ def train():
         args.ckpt_interval = args.steps_per_epoch * 10
 
     # lr scheduler
-    if args.lr_scheduler == 'exponential':
-        lr = warmup_step_lr(args.lr,
-                            args.lr_epochs,
-                            args.steps_per_epoch,
-                            args.warmup_epochs,
-                            args.epoch_size,
-                            gamma=args.lr_gamma,
-                            )
-    elif args.lr_scheduler == 'cosine_annealing':
-        lr = warmup_cosine_annealing_lr(args.lr,
-                                        args.steps_per_epoch,
-                                        args.warmup_epochs,
-                                        args.max_epoch,
-                                        args.T_max,
-                                        args.eta_min)
-    elif args.lr_scheduler == 'cosine_annealing_V2':
-        lr = warmup_cosine_annealing_lr_V2(args.lr,
-                                           args.steps_per_epoch,
-                                           args.warmup_epochs,
-                                           args.max_epoch,
-                                           args.T_max,
-                                           args.eta_min)
-    elif args.lr_scheduler == 'cosine_annealing_sample':
-        lr = warmup_cosine_annealing_lr_sample(args.lr,
-                                               args.steps_per_epoch,
-                                               args.warmup_epochs,
-                                               args.max_epoch,
-                                               args.T_max,
-                                               args.eta_min)
-    else:
-        raise NotImplementedError(args.lr_scheduler)
+    lr = get_lr(args)
 
     opt = Momentum(params=get_param_groups(network),
                    learning_rate=Tensor(lr),
@@ -247,29 +215,19 @@ def train():
 
     old_progress = -1
     t_end = time.time()
-    data_loader = ds.create_dict_iterator()
+    data_loader = ds.create_dict_iterator(output_numpy=True)
 
-    shape_record = ShapeRecord()
     for i, data in enumerate(data_loader):
         images = data["image"]
         input_shape = images.shape[2:4]
-        shape_record.set(input_shape)
+        images = Tensor.from_numpy(images)
 
-        images = Tensor(images)
-        annos = data["annotation"]
-        if args.group_size == 1:
-            batch_y_true_0, batch_y_true_1, batch_y_true_2, batch_gt_box0, batch_gt_box1, batch_gt_box2 = \
-                batch_preprocess_true_box(annos, config, input_shape)
-        else:
-            batch_y_true_0, batch_y_true_1, batch_y_true_2, batch_gt_box0, batch_gt_box1, batch_gt_box2 = \
-                batch_preprocess_true_box_single(annos, config, input_shape)
-
-        batch_y_true_0 = Tensor(batch_y_true_0)
-        batch_y_true_1 = Tensor(batch_y_true_1)
-        batch_y_true_2 = Tensor(batch_y_true_2)
-        batch_gt_box0 = Tensor(batch_gt_box0)
-        batch_gt_box1 = Tensor(batch_gt_box1)
-        batch_gt_box2 = Tensor(batch_gt_box2)
+        batch_y_true_0 = Tensor.from_numpy(data['bbox1'])
+        batch_y_true_1 = Tensor.from_numpy(data['bbox2'])
+        batch_y_true_2 = Tensor.from_numpy(data['bbox3'])
+        batch_gt_box0 = Tensor.from_numpy(data['gt_box1'])
+        batch_gt_box1 = Tensor.from_numpy(data['gt_box2'])
+        batch_gt_box2 = Tensor.from_numpy(data['gt_box3'])
 
         input_shape = Tensor(tuple(input_shape[::-1]), ms.float32)
         loss = network(images, batch_y_true_0, batch_y_true_1, batch_y_true_2, batch_gt_box0, batch_gt_box1,
