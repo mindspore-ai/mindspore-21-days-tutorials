@@ -29,7 +29,7 @@ sudo systemctl daemon-reload
 sudo systemctl restart docker
 ```
 
-### 使用以下命令拉取/启动MindSpore 1.0.0 版本GPU镜像
+### 使用以下命令拉取/启动MindSpore 1.0.0 版本GPU镜像，若需要使用其他版本（如：1.1.1)，则拉取/启动对应镜像版本即可。
 ```
 # 拉取镜像
 docker pull mindspore/mindspore-gpu:1.0.0
