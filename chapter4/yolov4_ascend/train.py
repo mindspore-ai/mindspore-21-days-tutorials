@@ -17,8 +17,6 @@
 # python train.py \
 #     --data_dir ../basketball-dataset/ \
 #     --pretrained_backbone ./ckpt_files/backbone_cspdarknet53.ckpt \
-#     --lr=0.012 \
-#     --T_max=320 \
 #     --max_epoch=320 \
 #     --warmup_epochs=4 \
 #     --training_shape=416 \

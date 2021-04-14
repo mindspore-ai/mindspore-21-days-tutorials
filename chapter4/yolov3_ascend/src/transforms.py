@@ -14,7 +14,6 @@
 # ============================================================================
 """Preprocess dataset."""
 import random
-import threading
 import copy
 
 import numpy as np
@@ -73,42 +72,35 @@ def statistic_normalize_img(img, statistic_norm):
 
 
 def get_interp_method(interp, sizes=()):
-    """Get the interpolation method for resize functions.
+    """
+    Get the interpolation method for resize functions.
     The major purpose of this function is to wrap a random interp method selection
     and a auto-estimation method.
 
-    Parameters
-    ----------
-    interp : int
-        interpolation method for all resizing operations
-
-        Possible values:
-        0: Nearest Neighbors Interpolation.
-        1: Bilinear interpolation.
-        2: Bicubic interpolation over 4x4 pixel neighborhood.
-        3: Nearest Neighbors. [Originally it should be Area-based,
-        as we cannot find Area-based, so we use NN instead.
-        Area-based (resampling using pixel area relation). It may be a
-        preferred method for image decimation, as it gives moire-free
-        results. But when the image is zoomed, it is similar to the Nearest
-        Neighbors method. (used by default).
-        4: Lanczos interpolation over 8x8 pixel neighborhood.
-        9: Cubic for enlarge, area for shrink, bilinear for others
-        10: Random select from interpolation method metioned above.
-        Note:
+    Note:
         When shrinking an image, it will generally look best with AREA-based
         interpolation, whereas, when enlarging an image, it will generally look best
-        with Bicubic (slow) or Bilinear (faster but still looks OK).
-        More details can be found in the documentation of OpenCV, please refer to
-        http://docs.opencv.org/master/da/d54/group__imgproc__transform.html.
-    sizes : tuple of int
-        (old_height, old_width, new_height, new_width), if None provided, auto(9)
-        will return Area(2) anyway.
+        with Bicubic or Bilinear.
 
-    Returns
-    -------
-    int
-        interp method from 0 to 4
+    Args:
+        interp (int): Interpolation method for all resizing operations.
+
+            - 0: Nearest Neighbors Interpolation.
+            - 1: Bilinear interpolation.
+            - 2: Bicubic interpolation over 4x4 pixel neighborhood.
+            - 3: Nearest Neighbors. Originally it should be Area-based, as we cannot find Area-based,
+              so we use NN instead. Area-based (resampling using pixel area relation).
+              It may be a preferred method for image decimation, as it gives moire-free results.
+              But when the image is zoomed, it is similar to the Nearest Neighbors method. (used by default).
+            - 4: Lanczos interpolation over 8x8 pixel neighborhood.
+            - 9: Cubic for enlarge, area for shrink, bilinear for others.
+            - 10: Random select from interpolation method mentioned above.
+
+        sizes (tuple): Format should like (old_height, old_width, new_height, new_width),
+            if None provided, auto(9) will return Area(2) anyway. Default: ()
+
+    Returns:
+        int, interp method from 0 to 4.
     """
     if interp == 9:
         if sizes:
@@ -153,7 +145,7 @@ def _preprocess_true_boxes(true_boxes, anchors, in_shape, num_classes,
     # input_shape is [h, w]
     true_boxes[..., 0:2] = boxes_xy / input_shape[::-1]
     true_boxes[..., 2:4] = boxes_wh / input_shape[::-1]
-    # true_boxes = [xywh]
+    # true_boxes [x, y, w, h]
 
     grid_shapes = [input_shape // 32, input_shape // 16, input_shape // 8]
     # grid_shape [h, w]
@@ -473,6 +465,11 @@ class MultiScaleTrans:
         self.seed_list = self.generate_seed_list(seed_num=self.seed_num)
         self.resize_count_num = int(np.ceil(self.dataset_size / self.resize_rate))
         self.device_num = device_num
+        self.anchor_scales = config.anchor_scales
+        self.num_classes = config.num_classes
+        self.max_box = config.max_box
+        self.label_smooth = config.label_smooth
+        self.label_smooth_factor = config.label_smooth_factor
 
     def generate_seed_list(self, init_seed=1234, seed_num=int(1e6), seed_range=(1, 1000)):
         seed_list = []
@@ -482,12 +479,19 @@ class MultiScaleTrans:
             seed_list.append(seed)
         return seed_list
 
-    def __call__(self, imgs, annos, batchInfo):
+    def __call__(self, imgs, annos, x1, x2, x3, x4, x5, x6, batchInfo):
         epoch_num = batchInfo.get_epoch_num()
         size_idx = int(batchInfo.get_batch_num() / self.resize_rate)
         seed_key = self.seed_list[(epoch_num * self.resize_count_num + size_idx) % self.seed_num]
         ret_imgs = []
         ret_annos = []
+
+        bbox1 = []
+        bbox2 = []
+        bbox3 = []
+        gt1 = []
+        gt2 = []
+        gt3 = []
 
         if self.size_dict.get(seed_key, None) is None:
             random.seed(seed_key)
@@ -499,80 +503,16 @@ class MultiScaleTrans:
         for img, anno in zip(imgs, annos):
             img, anno = preprocess_fn(img, anno, self.config, input_size, self.device_num)
             ret_imgs.append(img.transpose(2, 0, 1).copy())
-            ret_annos.append(anno)
-        return np.array(ret_imgs), np.array(ret_annos)
-
-
-def thread_batch_preprocess_true_box(annos, config, input_shape, result_index, batch_bbox_true_1, batch_bbox_true_2,
-                                     batch_bbox_true_3, batch_gt_box1, batch_gt_box2, batch_gt_box3):
-    """Preprocess true box for multi-thread."""
-    i = 0
-    for anno in annos:
-        bbox_true_1, bbox_true_2, bbox_true_3, gt_box1, gt_box2, gt_box3 = \
-            _preprocess_true_boxes(true_boxes=anno, anchors=config.anchor_scales, in_shape=input_shape,
-                                   num_classes=config.num_classes, max_boxes=config.max_box,
-                                   label_smooth=config.label_smooth, label_smooth_factor=config.label_smooth_factor)
-        batch_bbox_true_1[result_index + i] = bbox_true_1
-        batch_bbox_true_2[result_index + i] = bbox_true_2
-        batch_bbox_true_3[result_index + i] = bbox_true_3
-        batch_gt_box1[result_index + i] = gt_box1
-        batch_gt_box2[result_index + i] = gt_box2
-        batch_gt_box3[result_index + i] = gt_box3
-        i = i + 1
-
-
-def batch_preprocess_true_box(annos, config, input_shape):
-    """Preprocess true box with multi-thread."""
-    batch_bbox_true_1 = []
-    batch_bbox_true_2 = []
-    batch_bbox_true_3 = []
-    batch_gt_box1 = []
-    batch_gt_box2 = []
-    batch_gt_box3 = []
-    threads = []
-
-    step = 4
-    for index in range(0, len(annos), step):
-        for _ in range(step):
-            batch_bbox_true_1.append(None)
-            batch_bbox_true_2.append(None)
-            batch_bbox_true_3.append(None)
-            batch_gt_box1.append(None)
-            batch_gt_box2.append(None)
-            batch_gt_box3.append(None)
-        step_anno = annos[index: index + step]
-        t = threading.Thread(target=thread_batch_preprocess_true_box,
-                             args=(step_anno, config, input_shape, index, batch_bbox_true_1, batch_bbox_true_2,
-                                   batch_bbox_true_3, batch_gt_box1, batch_gt_box2, batch_gt_box3))
-        t.start()
-        threads.append(t)
-
-    for t in threads:
-        t.join()
-
-    return np.array(batch_bbox_true_1), np.array(batch_bbox_true_2), np.array(batch_bbox_true_3), \
-        np.array(batch_gt_box1), np.array(batch_gt_box2), np.array(batch_gt_box3)
-
-
-def batch_preprocess_true_box_single(annos, config, input_shape):
-    """Preprocess true boxes."""
-    batch_bbox_true_1 = []
-    batch_bbox_true_2 = []
-    batch_bbox_true_3 = []
-    batch_gt_box1 = []
-    batch_gt_box2 = []
-    batch_gt_box3 = []
-    for anno in annos:
-        bbox_true_1, bbox_true_2, bbox_true_3, gt_box1, gt_box2, gt_box3 = \
-            _preprocess_true_boxes(true_boxes=anno, anchors=config.anchor_scales, in_shape=input_shape,
-                                   num_classes=config.num_classes, max_boxes=config.max_box,
-                                   label_smooth=config.label_smooth, label_smooth_factor=config.label_smooth_factor)
-        batch_bbox_true_1.append(bbox_true_1)
-        batch_bbox_true_2.append(bbox_true_2)
-        batch_bbox_true_3.append(bbox_true_3)
-        batch_gt_box1.append(gt_box1)
-        batch_gt_box2.append(gt_box2)
-        batch_gt_box3.append(gt_box3)
-
-    return np.array(batch_bbox_true_1), np.array(batch_bbox_true_2), np.array(batch_bbox_true_3), \
-        np.array(batch_gt_box1), np.array(batch_gt_box2), np.array(batch_gt_box3)
+            bbox_true_1, bbox_true_2, bbox_true_3, gt_box1, gt_box2, gt_box3 = \
+                _preprocess_true_boxes(true_boxes=anno, anchors=self.anchor_scales, in_shape=img.shape[0:2],
+                                       num_classes=self.num_classes, max_boxes=self.max_box,
+                                       label_smooth=self.label_smooth, label_smooth_factor=self.label_smooth_factor)
+            bbox1.append(bbox_true_1)
+            bbox2.append(bbox_true_2)
+            bbox3.append(bbox_true_3)
+            gt1.append(gt_box1)
+            gt2.append(gt_box2)
+            gt3.append(gt_box3)
+            ret_annos.append(0)
+        return np.array(ret_imgs), np.array(ret_annos), np.array(bbox1), np.array(bbox2), np.array(bbox3), \
+            np.array(gt1), np.array(gt2), np.array(gt3)

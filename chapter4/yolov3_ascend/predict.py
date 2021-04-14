@@ -16,7 +16,6 @@
 import os
 import argparse
 import datetime
-import time
 import sys
 from collections import defaultdict
 
@@ -65,7 +64,7 @@ class DetectionEngine:
 
     def _nms(self, dets, thresh):
         """Calculate NMS."""
-        # conver xywh -> xmin ymin xmax ymax
+        # convert xywh -> xmin ymin xmax ymax
         x1 = dets[:, 0]
         y1 = dets[:, 1]
         x2 = x1 + dets[:, 2]
