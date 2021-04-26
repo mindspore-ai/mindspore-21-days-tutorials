@@ -19,4 +19,4 @@
 [bert_base ckpt下载链接](https://bert-21days.obs.myhuaweicloud.com:443/bert/bert_base.ckpt?AccessKeyId=M7KX8KLMT0ZL1P8QWXZ5&Expires=1635991421&Signature=cruWVmPy68Fz%2Bfr90Do5sS1WN0E%3D)
 
 # 视频地址
-[视频地址](https://www.bilibili.com/video/BV1YK4y177t2)
+[基于Bert进行中文新闻分类](https://www.bilibili.com/video/BV1YK4y177t2)

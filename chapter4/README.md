@@ -16,6 +16,10 @@
 
     [YOLOv4预训练模型下载地址](https://ascend-tutorials.obs.cn-north-4.myhuaweicloud.com/yolov3_darknet53/ckpt_files/yolov4-320_20800.ckpt)
 
+* 视频教程
+
+    [基于YOLOV3-DarkNet50的篮球检测模型](https://www.bilibili.com/video/BV1PT4y1c7gp)
+
 ## 免责声明
 
 MindSpore ModelZoo only provides scripts that downloads and preprocesses public datasets. We do not own these datasets and are not responsible for their quality or maintenance. Please make sure you have permission to use the dataset under the dataset’s license. The models trained on these dataset are for non-commercial research and educational purpose only.

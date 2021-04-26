@@ -22,3 +22,6 @@ PDF版：[下载链接](https://wide-deep-21.obs.cn-north-4.myhuaweicloud.com/Wi
 
 # 作业说明文档
 [下载链接](https://wide-deep-21.obs.cn-north-4.myhuaweicloud.com/MindSpore21%E5%A4%A9%E5%AE%9E%E6%88%98%E8%90%A5%E7%AC%AC%E4%BA%94%E8%AE%B2%E4%BD%9C%E4%B8%9A%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3.docx)
+
+# 视频教程
+[基于MindSpore Wide & Deep实现CTR预估实战](https://www.bilibili.com/video/BV1CV411y7oj)
