@@ -39,7 +39,7 @@ def resnet50_eval(args_opt):
     local_ckpt_path = '/cache/'+ckpt_file
 
     # set graph mode and parallel mode
-    context.set_context(mode=context.GRAPH_MODE, device_target="Ascend", save_graphs=False)
+    context.set_context(mode=context.GRAPH_MODE, device_target=args_opt.device_target, save_graphs=False)
 
     # data download
     print('Download data.')
@@ -74,6 +74,7 @@ if __name__ == '__main__':
     parser.add_argument('--data_url', required=True, default=None, help='Location of data.')
     parser.add_argument('--train_url', required=True, default=None, help='Location of training outputs.')
     parser.add_argument('--checkpoint_path', required=True, type=str, default=None, help='Checkpoint file path')
+    parser.add_argument('--device_target', type=str, default='Ascend', help='Device target. Default: Ascend.')
     args_opt, unknown = parser.parse_known_args()
 
     resnet50_eval(args_opt)

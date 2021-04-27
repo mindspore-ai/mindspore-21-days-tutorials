@@ -20,10 +20,6 @@ import mindspore.dataset.vision.c_transforms as C
 import mindspore.dataset.transforms.c_transforms as C2
 
 
-device_id = int(os.getenv('DEVICE_ID'))
-device_num = int(os.getenv('RANK_SIZE'))
-
-
 def create_dataset(dataset_path, do_train, repeat_num=1, batch_size=32):
     """
     Create a train or eval dataset.

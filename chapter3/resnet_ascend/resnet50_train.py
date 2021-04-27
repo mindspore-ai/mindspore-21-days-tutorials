@@ -13,6 +13,7 @@
 # limitations under the License.
 # ============================================================================
 """ResNet50 model train with MindSpore"""
+import os
 import argparse
 import random
 import time
@@ -26,12 +27,13 @@ from mindspore.train import Model
 from mindspore.train.callback import ModelCheckpoint, CheckpointConfig, TimeMonitor, Callback, LossMonitor
 from mindspore.train.loss_scale_manager import FixedLossScaleManager
 
-from src.dataset import create_dataset, device_num
+from src.dataset import create_dataset
 from src.config import cfg
 from src.resnet import resnet50
 
 random.seed(1)
 np.random.seed(1)
+device_num = int(os.environ.get("RANK_SIZE", 1))
 
 
 class PerformanceCallback(Callback):
@@ -114,7 +116,7 @@ def resnet50_train(args_opt):
     local_ckpt_path = '/cache/ckpt_file'
 
     # set graph mode and parallel mode
-    context.set_context(mode=context.GRAPH_MODE, device_target="Ascend", save_graphs=False)
+    context.set_context(mode=context.GRAPH_MODE, device_target=args_opt.device_target, save_graphs=False)
 
     # data download
     print('Download data.')
@@ -163,7 +165,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='ResNet50 train.')
     parser.add_argument('--data_url', required=True, default=None, help='Location of data.')
     parser.add_argument('--train_url', required=True, default=None, help='Location of training outputs.')
-    parser.add_argument('--epoch_size', type=int, default=90, help='Train epoch size.')
+    parser.add_argument('--device_target', type=str, default='Ascend', help='Device target. Default: Ascend.')
+    parser.add_argument('--epoch_size', type=int, default=90, help='Train epoch size. Default: 90.')
 
     args_opt, unknown = parser.parse_known_args()
 

@@ -35,8 +35,6 @@ from src.logger import get_logger
 from src.yolo_dataset import create_yolo_dataset
 from src.config import ConfigYOLOV3DarkNet53
 
-context.set_context(mode=context.GRAPH_MODE, device_target="Ascend", save_graphs=False)
-
 
 class Redirect:
     def __init__(self):
@@ -202,6 +200,10 @@ def parse_args():
     """Parse arguments."""
     parser = argparse.ArgumentParser('mindspore coco testing')
 
+    # device related
+    parser.add_argument('--device_target', type=str, default='Ascend', choices=['Ascend', 'GPU'],
+                        help='device where the code will be implemented. (Default: Ascend)')
+
     # dataset related
     parser.add_argument('--per_batch_size', default=1, type=int, help='batch size for per gpu')
 
@@ -233,6 +235,8 @@ def test():
     """The function of eval."""
     start_time = time.time()
     args = parse_args()
+
+    context.set_context(mode=context.GRAPH_MODE, device_target=args.device_target, save_graphs=False)
 
     # logger
     args.outputs_dir = os.path.join(args.log_path,

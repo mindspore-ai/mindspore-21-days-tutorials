@@ -37,9 +37,6 @@ from src.yolo_dataset import create_yolo_dataset
 from src.initializer import default_recursive_init
 from src.config import ConfigYOLOV3DarkNet53
 
-context.set_context(mode=context.GRAPH_MODE, enable_auto_mixed_precision=True,
-                    device_target="Ascend", save_graphs=False)
-
 
 class BuildTrainNetwork(nn.Cell):
     def __init__(self, network, criterion):
@@ -56,6 +53,10 @@ class BuildTrainNetwork(nn.Cell):
 def parse_args():
     """Parse train arguments."""
     parser = argparse.ArgumentParser('mindspore coco training')
+
+    # device related
+    parser.add_argument('--device_target', type=str, default='Ascend', choices=['Ascend', 'GPU'],
+                        help='device where the code will be implemented. (Default: Ascend)')
 
     # dataset related
     parser.add_argument('--per_batch_size', default=32, type=int, help='batch size for per gpu')
@@ -114,6 +115,9 @@ def convert_training_shape(args):
 def train():
     """Train function."""
     args = parse_args()
+
+    context.set_context(mode=context.GRAPH_MODE, enable_auto_mixed_precision=True,
+                        device_target=args.device_target, save_graphs=False)
 
     # logger
     args.outputs_dir = os.path.join(args.ckpt_path,

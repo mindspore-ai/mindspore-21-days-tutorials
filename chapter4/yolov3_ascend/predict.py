@@ -33,8 +33,6 @@ from src.logger import get_logger
 from src.config import ConfigYOLOV3DarkNet53
 from src.transforms import _reshape_data
 
-context.set_context(mode=context.GRAPH_MODE, device_target="Ascend", save_graphs=False)
-
 label_list = ['stand', 'walk', 'run', 'shoot', 'defense']
 
 
@@ -163,6 +161,10 @@ def parse_args():
     """Parse arguments."""
     parser = argparse.ArgumentParser('mindspore coco testing')
 
+    # device related
+    parser.add_argument('--device_target', type=str, default='Ascend', choices=['Ascend', 'GPU'],
+                        help='device where the code will be implemented. (Default: Ascend)')
+
     # dataset related
     parser.add_argument('--per_batch_size', default=1, type=int, help='batch size for per gpu')
 
@@ -194,6 +196,8 @@ def data_preprocess(img_path, config):
 def predict():
     """The function of predict."""
     args = parse_args()
+
+    context.set_context(mode=context.GRAPH_MODE, device_target=args.device_target, save_graphs=False)
 
     # logger
     args.outputs_dir = os.path.join(args.log_path,
