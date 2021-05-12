@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""Process Train  Eval."""
+"""Download raw data and preprocessed data."""
 import os
 import pickle
 import collections
@@ -151,7 +151,7 @@ def statsdata(file_path, dict_output_path, recommendation_dataset_stats_dict, de
                 print("Found line length: {}, suppose to be {}, the line is {}".format(len(items),
                                                                                        dense_dim + slot_dim + 1, line))
                 continue
-            if count % 100000 == 0:
+            if count % 1000000 == 0:
                 print("Have handled {}w lines.".format(count // 10000))
             values = items[1: dense_dim + 1]
             cats = items[dense_dim + 1:]
@@ -199,7 +199,7 @@ def random_split_trans2mindrecord(input_file_path, output_file_path, recommendat
         test_part_number = 0
         for i, line in enumerate(file_in):
             count += 1
-            if count % 100000 == 0:
+            if count % 1000000 == 0:
                 print("Have handle {}w lines.".format(count // 10000))
             line = line.strip("\n")
             items = line.split("\t")

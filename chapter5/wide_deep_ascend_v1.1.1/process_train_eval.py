@@ -11,7 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+# ============================================================================
 """ Process train and eval"""
+import time
 from src.config import WideDeepConfig
 from mindspore import context
 from src.preprocess_data import StatsDict, mkdir_path, statsdata, random_split_trans2mindrecord
@@ -50,5 +52,10 @@ if __name__ == "__main__":
                                   test_size=0.1, seed=2020, dense_dim=config.dense_dim, slot_dim=config.slot_dim)
 
     context.set_context(mode=context.GRAPH_MODE, device_target=config.device_target)
+    start_time = time.time()
+    print('Start train and eval time: ', start_time)
     train_eval(config)
-    print('Done all the jobs.')
+    end_time = time.time()
+    cost_train_eval_time = end_time - start_time
+    print('Train and eval total cost time: ', cost_train_eval_time/60, ' minutes.')
+    print('Done all the jobs: data preprocess, train and eval!!!')
